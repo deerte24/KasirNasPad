@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -56,7 +57,9 @@ fun MenuScreen(viewModel: KasirViewModel){
     var kategori by remember { mutableStateOf("") }
     var stok by remember { mutableStateOf("") }
 
-    Column(modifier = Modifier.padding(16.dp).fillMaxSize()){
+    Column(modifier = Modifier
+        .padding(16.dp)
+        .fillMaxSize()){
         Text(
             text = "Tambah Menu",
             style = MaterialTheme.typography.headlineSmall
@@ -132,7 +135,9 @@ fun MenuScreen(viewModel: KasirViewModel){
         } else {
             LazyColumn {
                 items(daftarMenu) { menu ->
-                    Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                    Card(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)) {
                         Column(modifier = Modifier.padding(12.dp)) {
                             Text(text = menu.namaMenu, style = MaterialTheme.typography.titleMedium)
                             Text(text = "Rp${menu.harga.toInt()}")
@@ -181,14 +186,16 @@ fun KasirScreen(viewModel: KasirViewModel){
     val daftarMenu by viewModel.semuaMenu.collectAsState(initial = emptyList())
 
     val keranjang = remember { mutableStateMapOf<Int, Int>() }
-    val metodePembayaran by remember { mutableStateOf("CASH") }
+    var metodePembayaran by remember { mutableStateOf("CASH") }
 
     val totalHarga = daftarMenu.sumOf { menu ->
         val jumlah = keranjang[menu.id] ?: 0
         menu.harga * jumlah
     }
 
-    Column(modifier = Modifier.padding(16.dp).fillMaxSize()) {
+    Column(modifier = Modifier
+        .padding(16.dp)
+        .fillMaxSize()) {
         Text("Pilih Menu", style = MaterialTheme.typography.headlineSmall)
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -196,9 +203,13 @@ fun KasirScreen(viewModel: KasirViewModel){
             items(daftarMenu){ menu ->
                 val jumlahDipilih = keranjang[menu.id] ?: 0
 
-                Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                Card(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)) {
                     Row(
-                        modifier = Modifier.padding(12.dp).fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(12.dp)
+                            .fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -232,23 +243,37 @@ fun KasirScreen(viewModel: KasirViewModel){
         Spacer(modifier = Modifier.height(8.dp))
 
         Text("Metode Pembayaran")
-        Row {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                RadioButton(
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .selectable(
                     selected = metodePembayaran == "CASH",
-                    onClick = { metodePembayaran == "CASH"}
+                    onClick = { metodePembayaran = "CASH"}
                 )
-                Text("Cash")
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                RadioButton(
-                    selected = metodePembayaran == "QRIS",
-                    onClick = { metodePembayaran == "QRIS"}
-                )
-                Text("QRIS")
-            }
+        ) {
+            RadioButton(
+                selected = metodePembayaran == "CASH",
+                onClick = null
+            )
+            Text("Cash")
         }
+        Spacer(modifier = Modifier.width(20.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .selectable(
+                    selected = metodePembayaran == "QRIS",
+                    onClick = { metodePembayaran = "QRIS"}
+                )
+        ) {
+            RadioButton(
+                selected = metodePembayaran == "QRIS",
+                onClick = null
+            )
+            Text("QRIS")
+        }
+
         Spacer(modifier = Modifier.height(12.dp))
         Button(
             onClick = {
